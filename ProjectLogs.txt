@@ -1,0 +1,281 @@
+sshpass -p "aambabarri" scp -P 2222 Загрузки/archive\ \(1\)/weatherHistory.csv  root@localhost:~/
+
+ssh root@127.0.0.1 -p 2222
+aambabarri
+
+hdfs dfs -put /home/root/weatherHistory.csv /user/root/weather_project/
+
+sudo -i -u postgres
+
+psql
+
+CREATE DATABASE weather_data;
+
+\c weather_data
+
+
+CREATE TABLE weather_records (
+    id SERIAL PRIMARY KEY,
+    formatted_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    summary TEXT,
+    precip_type TEXT,
+    temperature NUMERIC(5, 2) NOT NULL,
+    apparent_temperature NUMERIC(5, 2) NOT NULL,
+    humidity NUMERIC(3, 2) NOT NULL,
+    wind_speed NUMERIC(5, 2) NOT NULL,
+    wind_bearing INT,
+    visibility NUMERIC(5, 2),
+    loud_cover NUMERIC(3, 2) CHECK (loud_cover = 0), 
+    pressure NUMERIC(6, 2),
+    daily_summary TEXT
+);
+
+
+## Parallelly copy CSV file from root directory to postgres directory
+sudo mv /root/weatherHistory.csv /tmp/
+
+
+## Oopsie, wind bearing is not int but float. Fix that!
+ALTER TABLE weather_records
+ALTER COLUMN wind_bearing TYPE NUMERIC USING wind_bearing::NUMERIC;
+
+## Now, import the csv to a database:
+
+\copy weather_records(formatted_date, summary, precip_type, temperature, apparent_temperature, humidity, wind_speed, wind_bearing, visibility, loud_cover, pressure, daily_summary) FROM '/tmp/weatherHistory.csv' WITH CSV HEADER;
+
+## Now, import the data to HDFS via Sqoop
+
+sqoop import --connect jdbc:postgresql://localhost/weather_data --username postgres  --table weather_records --m 1 --target-dir /user/hive/warehouse/weather_data --as-avrodatafile;
+Warning: /usr/hdp/2.6.5.0-292/accumulo does not exist! Accumulo imports will fail.
+Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+24/03/26 21:05:11 INFO sqoop.Sqoop: Running Sqoop version: 1.4.6.2.6.5.0-292
+24/03/26 21:05:11 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
+24/03/26 21:05:11 INFO manager.SqlManager: Using default fetchSize of 1000
+24/03/26 21:05:11 INFO tool.CodeGenTool: Beginning code generation
+24/03/26 21:05:11 ERROR sqoop.Sqoop: Got exception running Sqoop: java.lang.RuntimeException: Could not load db driver class: org.postgresql.Driver
+java.lang.RuntimeException: Could not load db driver class: org.postgresql.Driver
+	at org.apache.sqoop.manager.SqlManager.makeConnection(SqlManager.java:875)
+	at org.apache.sqoop.manager.GenericJdbcManager.getConnection(GenericJdbcManager.java:52)
+	at org.apache.sqoop.manager.SqlManager.execute(SqlManager.java:763)
+	at org.apache.sqoop.manager.SqlManager.execute(SqlManager.java:786)
+	at org.apache.sqoop.manager.SqlManager.getColumnInfoForRawQuery(SqlManager.java:289)
+	at org.apache.sqoop.manager.SqlManager.getColumnTypesForRawQuery(SqlManager.java:260)
+	at org.apache.sqoop.manager.SqlManager.getColumnTypes(SqlManager.java:246)
+	at org.apache.sqoop.manager.ConnManager.getColumnTypes(ConnManager.java:328)
+	at org.apache.sqoop.orm.ClassWriter.getColumnTypes(ClassWriter.java:1853)
+	at org.apache.sqoop.orm.ClassWriter.generate(ClassWriter.java:1653)
+	at org.apache.sqoop.tool.CodeGenTool.generateORM(CodeGenTool.java:107)
+	at org.apache.sqoop.tool.ImportTool.importTable(ImportTool.java:488)
+	at org.apache.sqoop.tool.ImportTool.run(ImportTool.java:615)
+	at org.apache.sqoop.Sqoop.run(Sqoop.java:147)
+	at org.apache.hadoop.util.ToolRunner.run(ToolRunner.java:76)
+	at org.apache.sqoop.Sqoop.runSqoop(Sqoop.java:183)
+	at org.apache.sqoop.Sqoop.runTool(Sqoop.java:225)
+	at org.apache.sqoop.Sqoop.runTool(Sqoop.java:234)
+	at org.apache.sqoop.Sqoop.main(Sqoop.java:243)
+
+## OOPS, no driver. Download from https://jdbc.postgresql.org/download/  FOR java 8
+sshpass -p "aambabarri" scp -P 2222 Загрузки/postgresql-42.7.3.jar  root@localhost:/usr/hdp/2.6.5.0-292/sqoop/lib/
+
+
+## OOPS, cannot login
+
+FATAL: Ident authentication failed for user "postgres"
+
+1. **Modify PostgreSQL Authentication Method**:
+   - You need to edit the `pg_hba.conf` file, which controls client authentication in PostgreSQL. This file is typically found in the PostgreSQL data directory, which varies by installation method and operating system. Common locations include `/var/lib/pgsql/data/pg_hba.conf` or `/etc/postgresql/<version>/main/pg_hba.conf`.
+   
+   - Locate the line(s) that resemble the following (the specifics can vary):
+     ```
+     # TYPE  DATABASE        USER            ADDRESS                 METHOD
+     host    all             all             127.0.0.1/32            ident
+     ```
+     Replace `ident` with `md5` or `password` for the line that matches your connection attempt (likely localhost or 127.0.0.1/32 for Sqoop). For example:
+     ```
+     host    all             all             127.0.0.1/32            md5
+     ```
+     This change will require connections to use a password authenticated via MD5.
+
+2. **Reload PostgreSQL Configuration**:
+   - After making the change, you need to reload PostgreSQL's configuration for the changes to take effect. This can typically be done without restarting PostgreSQL:
+     ```bash
+     sudo -u postgres psql -c "SELECT pg_reload_conf();"
+     ```
+     Or, depending on your setup, you might need to restart the PostgreSQL service:
+     ```bash
+     sudo systemctl restart postgresql
+     ```
+     Or for older systems:
+     ```bash
+     sudo service postgresql restart
+     ```
+
+3. **Retry the Sqoop Command**:
+   - With the authentication method updated, retry your Sqoop import command. If you've switched to `md5` authentication, the password should now work as expected.
+
+### Additional Considerations:
+
+- **Security Note**: The `md5` method is generally preferred over `password` because `password` sends passwords in clear text unless SSL is used. However, `md5` encrypts the password before sending it over the network.
+
+- **Pg_hba.conf Syntax**: The `pg_hba.conf` file can contain multiple lines for different types of connections (local, host, hostssl, etc.). Ensure you edit the correct line that corresponds to how Sqoop connects to PostgreSQL.
+
+- **PostgreSQL Version**: The instructions provided are generally applicable to most PostgreSQL versions, but details might slightly vary. Consult the PostgreSQL documentation for your specific version if needed.
+
+By following these steps, you should be able to resolve the authentication issue and successfully import your data from PostgreSQL to HDFS via Sqoop.
+
+
+## NOW, login with password
+
+
+sqoop import --verbose --connect jdbc:postgresql://localhost/weather_data --username postgres --password postgres  --table weather_records --m 1 --target-dir /user/hive/warehouse/weather_data --as-avrodatafile;
+## HMMM what is actually the password? Let's reset it	
+sudo -u postgres psql
+
+
+ALTER USER postgres WITH PASSWORD 'postgres';
+
+sqoop import --connect jdbc:postgresql://localhost/weather_data --username postgres --password postgres --table weather_records --m 1 --target-dir /user/hive/warehouse/weather_data --as-avrodatafile;sudo systemctl reload postgresql
+
+## OMG, another problem. with Avro. Ok
+
+[root@sandbox-hdp ~]# ls /usr/hdp/current/sqoop-client/lib/avro*
+/usr/hdp/current/sqoop-client/lib/avro-1.8.0.jar  /usr/hdp/current/sqoop-client/lib/avro-mapred-1.8.0-hadoop2.jar
+[root@sandbox-hdp ~]# ls /usr/hdp/current/hadoop-client/lib/avro*
+/usr/hdp/current/hadoop-client/lib/avro-1.7.4.jar
+
+##  We see different versions. Okay, fix it. 
+
+This is actually a known issue, and there is a Jira for a documentation bug to get this fixed in a later HDP release. Sqoop uses 1.8.0 of avro and there are other Hadoop components using 1.7.5 or 1.7.4 avro.
+
+Please add the following property after 'import': -Dmapreduce.job.user.classpath.first=true
+
+## OKAY. Now, it throws org.apache.hadoop.mapred.FileAlreadyExistsException
+
+hdfs dfs -rm -r /user/hive/warehouse/weather_data
+
+## Finally, do the import
+sqoop import -Dmapreduce.job.user.classpath.first=true --connect jdbc:postgresql://localhost/weather_data --username postgres --password postgres --table weather_records --m 1 --target-dir /user/hive/warehouse/weather_data --as-avrodatafile;sudo systemctl reload postgresql
+
+## YAAAY it worked.
+
+## Verify the Import
+hdfs dfs -ls /user/hive/warehouse/weather_data
+## And checking a sample of the data:
+hdfs dfs -cat /user/hive/warehouse/weather_data/part-m-00000.avro | head
+
+## Create Hive Tables and store the data. open Hive:
+hive
+
+
+CREATE EXTERNAL TABLE IF NOT EXISTS weather_records (
+    id INT,
+    formatted_date TIMESTAMP,
+    summary STRING,
+    precip_type STRING,
+    temperature DOUBLE,
+    apparent_temperature DOUBLE,
+    humidity DOUBLE,
+    wind_speed DOUBLE,
+    wind_bearing DOUBLE,
+    visibility DOUBLE,
+    loud_cover DOUBLE,
+    pressure DOUBLE,
+    daily_summary STRING
+)
+STORED AS AVRO
+LOCATION '/user/hive/warehouse/weather_data';
+
+
+OK
+Time taken: 3.47 seconds
+
+## Yay 2.0!
+## Test:
+SELECT * FROM weather_records LIMIT 10;
+OK
+Failed with exception java.io.IOException:org.apache.avro.AvroTypeException: Found string, expecting union
+Time taken: 0.525 seconds
+
+## Oh no((( Nulls!!! Sad((
+DROP TABLE IF EXISTS weather_records;
+
+
+CREATE EXTERNAL TABLE weather_records
+ROW FORMAT SERDE 
+  'org.apache.hadoop.hive.serde2.avro.AvroSerDe' 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+LOCATION '/user/hive/warehouse/weather_data'
+TBLPROPERTIES (
+  'avro.schema.literal'='{
+    "type": "record",
+    "name": "weather_records",
+    "doc": "Sqoop import of weather_records",
+    "fields": [
+      {"name": "id", "type": ["null", "int"], "default": null, "columnName": "id", "sqlType": "4"},
+      {"name": "formatted_date", "type": ["null", "long"], "default": null, "columnName": "formatted_date", "sqlType": "93"},
+      {"name": "summary", "type": ["null", "string"], "default": null, "columnName": "summary", "sqlType": "12"},
+      {"name": "precip_type", "type": ["null", "string"], "default": null, "columnName": "precip_type", "sqlType": "12"},
+      {"name": "temperature", "type": ["null", "string"], "default": null, "columnName": "temperature", "sqlType": "2"},
+      {"name": "apparent_temperature", "type": ["null", "string"], "default": null, "columnName": "apparent_temperature", "sqlType": "2"},
+      {"name": "humidity", "type": ["null", "string"], "default": null, "columnName": "humidity", "sqlType": "2"},
+      {"name": "wind_speed", "type": ["null", "string"], "default": null, "columnName": "wind_speed", "sqlType": "2"},
+      {"name": "wind_bearing", "type": ["null", "string"], "default": null, "columnName": "wind_bearing", "sqlType": "2"},
+      {"name": "visibility", "type": ["null", "string"], "default": null, "columnName": "visibility", "sqlType": "2"},
+      {"name": "loud_cover", "type": ["null", "string"], "default": null, "columnName": "loud_cover", "sqlType": "2"},
+      {"name": "pressure", "type": ["null", "string"], "default": null, "columnName": "pressure", "sqlType": "2"},
+      {"name": "daily_summary", "type": ["null", "string"], "default": null, "columnName": "daily_summary", "sqlType": "12"}
+    ]
+  }'
+);
+
+
+
+SELECT * FROM weather_records LIMIT 10;
+
+OK
+1	1143842400000	Partly Cloudy	rain	9.47	7.39	0.89	14.12	251.0	15.83	0.00	1015.13	Partly cloudy throughout the day.
+2	1143846000000	Partly Cloudy	rain	9.36	7.23	0.86	14.26	259.0	15.83	0.00	1015.63	Partly cloudy throughout the day.
+3	1143849600000	Mostly Cloudy	rain	9.38	9.38	0.89	3.93	204.0	14.96	0.00	1015.94	Partly cloudy throughout the day.
+4	1143853200000	Partly Cloudy	rain	8.29	5.94	0.83	14.10	269.0	15.83	0.00	1016.41	Partly cloudy throughout the day.
+5	1143856800000	Mostly Cloudy	rain	8.76	6.98	0.83	11.04	259.0	15.83	0.00	1016.51	Partly cloudy throughout the day.
+6	1143860400000	Partly Cloudy	rain	9.22	7.11	0.85	13.96	258.0	14.96	0.00	1016.66	Partly cloudy throughout the day.
+7	1143864000000	Partly Cloudy	rain	7.73	5.52	0.95	12.36	259.0	9.98	0.00	1016.72	Partly cloudy throughout the day.
+8	1143867600000	Partly Cloudy	rain	8.77	6.53	0.89	14.15	260.0	9.98	0.00	1016.84	Partly cloudy throughout the day.
+9	1143871200000	Partly Cloudy	rain	10.82	10.82	0.82	11.32	259.0	9.98	0.00	1017.37	Partly cloudy throughout the day.
+10	1143874800000	Partly Cloudy	rain	13.77	13.77	0.72	12.53	279.0	9.98	0.00	1017.22	Partly cloudy throughout the day.
+Time taken: 0.636 seconds, Fetched: 10 row(s)
+
+
+## HOORAAAY!!! Yay 3.0
+
+## Generate insights
+## Install pip
+python3.6 -m ensurepip
+python3.6 -m pip install --upgrade pip
+
+
+python3.6 -m pip install streamlit pandas matplotlib seaborn
+python3.6 -m pip install pyspark findspark
+
+yum install centos-release-scl
+
+yum install devtoolset-8-gcc devtoolset-8-gcc-c++
+
+yum install gcc-c++ 
+yum install python-devel python3-devel python3.6-devel
+
+python3.6 -m pip install streamlit pyhive thrift sasl thrift_sasl
+
+## Now we can use Hive with python!
+
+
+
+
+## Now, write dashboard code aaaand...
+
+python3.6 -m streamlit run launch_dashboard.py  --server.address 0.0.0.0 --server.port 8889
+
+## Add port forwarding rule in virtualbox for streamlit

@@ -1,0 +1,265 @@
+1	Partly Cloudy	2653
+1	Mostly Cloudy	2368
+1	Overcast	1438
+1	Clear	928
+1	Foggy	625
+1	Breezy and Mostly Cloudy	46
+1	Breezy and Overcast	39
+1	Breezy and Partly Cloudy	38
+1	Light Rain	7
+1	Dry and Partly Cloudy	7
+1	Windy and Partly Cloudy	6
+1	Breezy	5
+1	Windy and Mostly Cloudy	4
+1	Drizzle	4
+1	Humid and Mostly Cloudy	3
+1	Dry	3
+1	Windy and Overcast	3
+1	Rain	2
+1	Dry and Mostly Cloudy	2
+1	Breezy and Foggy	2
+1	Humid and Partly Cloudy	2
+2	Partly Cloudy	2512
+2	Mostly Cloudy	2160
+2	Overcast	1313
+2	Clear	794
+2	Foggy	531
+2	Breezy and Overcast	40
+2	Breezy and Mostly Cloudy	34
+2	Breezy and Partly Cloudy	28
+2	Light Rain	7
+2	Windy and Partly Cloudy	5
+2	Humid and Mostly Cloudy	5
+2	Windy and Mostly Cloudy	5
+2	Breezy	4
+2	Breezy and Foggy	4
+2	Dry	3
+2	Drizzle	3
+2	Dry and Partly Cloudy	3
+2	Dry and Mostly Cloudy	3
+2	Windy and Overcast	2
+2	Humid and Overcast	1
+2	Humid and Partly Cloudy	1
+2	Dangerously Windy and Partly Cloudy	1
+2	Rain	1
+3	Partly Cloudy	2698
+3	Mostly Cloudy	2383
+3	Overcast	1387
+3	Clear	913
+3	Foggy	625
+3	Breezy and Overcast	47
+3	Breezy and Mostly Cloudy	47
+3	Breezy and Partly Cloudy	43
+3	Dry and Partly Cloudy	11
+3	Windy and Partly Cloudy	4
+3	Light Rain	4
+3	Breezy and Foggy	3
+3	Drizzle	3
+3	Dry and Mostly Cloudy	3
+3	Breezy	3
+3	Humid and Mostly Cloudy	2
+3	Humid and Partly Cloudy	2
+3	Windy and Mostly Cloudy	2
+3	Dry	1
+3	Windy and Foggy	1
+3	Windy and Overcast	1
+3	Humid and Overcast	1
+3	Windy	1
+4	Partly Cloudy	2575
+4	Mostly Cloudy	2336
+4	Overcast	1388
+4	Clear	892
+4	Foggy	582
+4	Breezy and Mostly Cloudy	46
+4	Breezy and Overcast	36
+4	Breezy and Partly Cloudy	26
+4	Dry and Partly Cloudy	14
+4	Breezy	5
+4	Light Rain	4
+4	Drizzle	4
+4	Dry	3
+4	Breezy and Foggy	3
+4	Windy and Partly Cloudy	3
+4	Windy and Mostly Cloudy	2
+4	Windy and Foggy	2
+4	Rain	1
+4	Humid and Mostly Cloudy	1
+4	Humid and Overcast	1
+4	Windy and Overcast	1
+5	Partly Cloudy	2728
+5	Mostly Cloudy	2350
+5	Overcast	1384
+5	Clear	958
+5	Foggy	593
+5	Breezy and Overcast	59
+5	Breezy and Mostly Cloudy	39
+5	Breezy and Partly Cloudy	30
+5	Dry and Partly Cloudy	8
+5	Light Rain	6
+5	Windy and Partly Cloudy	5
+5	Humid and Mostly Cloudy	4
+5	Breezy and Foggy	4
+5	Drizzle	4
+5	Windy and Overcast	4
+5	Breezy	3
+5	Dry	3
+5	Windy and Mostly Cloudy	3
+5	Humid and Partly Cloudy	2
+5	Dry and Mostly Cloudy	1
+5	Windy	1
+6	Partly Cloudy	2610
+6	Mostly Cloudy	2336
+6	Overcast	1315
+6	Clear	914
+6	Foggy	582
+6	Breezy and Overcast	51
+6	Breezy and Mostly Cloudy	41
+6	Breezy and Partly Cloudy	23
+6	Dry and Partly Cloudy	11
+6	Humid and Mostly Cloudy	6
+6	Light Rain	5
+6	Windy and Partly Cloudy	5
+6	Breezy	4
+6	Drizzle	4
+6	Windy and Overcast	4
+6	Breezy and Foggy	2
+6	Dry	2
+6	Humid and Partly Cloudy	1
+6	Dry and Mostly Cloudy	1
+6	Rain	1
+6	Windy	1
+6	Breezy and Dry	1
+6	Windy and Dry	1
+7	Partly Cloudy	2675
+7	Mostly Cloudy	2357
+7	Overcast	1401
+7	Clear	962
+7	Foggy	613
+7	Breezy and Overcast	50
+7	Breezy and Mostly Cloudy	45
+7	Breezy and Partly Cloudy	33
+7	Dry and Partly Cloudy	7
+7	Breezy	5
+7	Light Rain	5
+7	Windy and Overcast	5
+7	Windy and Partly Cloudy	5
+7	Humid and Mostly Cloudy	4
+7	Dry	4
+7	Breezy and Foggy	3
+7	Humid and Partly Cloudy	2
+7	Windy and Mostly Cloudy	2
+7	Drizzle	2
+7	Rain	1
+7	Humid and Overcast	1
+8	Partly Cloudy	2699
+8	Mostly Cloudy	2409
+8	Overcast	1358
+8	Clear	928
+8	Foggy	631
+8	Breezy and Overcast	42
+8	Breezy and Mostly Cloudy	41
+8	Breezy and Partly Cloudy	37
+8	Windy and Partly Cloudy	7
+8	Windy and Overcast	6
+8	Breezy	4
+8	Windy and Mostly Cloudy	4
+8	Light Rain	4
+8	Drizzle	3
+8	Dry	3
+8	Windy	2
+8	Breezy and Foggy	2
+8	Dry and Partly Cloudy	2
+8	Humid and Mostly Cloudy	2
+8	Humid and Partly Cloudy	2
+8	Dry and Mostly Cloudy	1
+8	Rain	1
+9	Partly Cloudy	2621
+9	Mostly Cloudy	2336
+9	Overcast	1360
+9	Clear	887
+9	Foggy	564
+9	Breezy and Overcast	44
+9	Breezy and Mostly Cloudy	37
+9	Breezy and Partly Cloudy	26
+9	Light Rain	7
+9	Breezy	7
+9	Windy and Partly Cloudy	7
+9	Dry and Partly Cloudy	6
+9	Humid and Mostly Cloudy	4
+9	Dry	4
+9	Drizzle	4
+9	Windy and Overcast	4
+9	Breezy and Foggy	2
+9	Humid and Partly Cloudy	1
+9	Windy	1
+9	Windy and Foggy	1
+9	Windy and Mostly Cloudy	1
+9	Dry and Mostly Cloudy	1
+10	Partly Cloudy	2673
+10	Mostly Cloudy	2360
+10	Overcast	1484
+10	Clear	902
+10	Foggy	591
+10	Breezy and Mostly Cloudy	53
+10	Breezy and Overcast	41
+10	Breezy and Partly Cloudy	39
+10	Light Rain	6
+10	Breezy and Foggy	5
+10	Windy and Partly Cloudy	5
+10	Windy and Mostly Cloudy	4
+10	Windy and Overcast	4
+10	Dry and Partly Cloudy	4
+10	Breezy	4
+10	Humid and Mostly Cloudy	4
+10	Drizzle	3
+10	Dry	2
+10	Windy	1
+10	Humid and Partly Cloudy	1
+10	Humid and Overcast	1
+10	Rain	1
+11	Partly Cloudy	2622
+11	Mostly Cloudy	2285
+11	Overcast	1342
+11	Clear	900
+11	Foggy	608
+11	Breezy and Mostly Cloudy	47
+11	Breezy and Overcast	40
+11	Breezy and Partly Cloudy	31
+11	Windy and Partly Cloudy	7
+11	Windy and Overcast	6
+11	Dry and Partly Cloudy	6
+11	Breezy	5
+11	Light Rain	5
+11	Windy and Mostly Cloudy	2
+11	Breezy and Foggy	2
+11	Humid and Partly Cloudy	2
+11	Dry	2
+11	Drizzle	2
+11	Humid and Mostly Cloudy	2
+11	Rain	1
+11	Humid and Overcast	1
+11	Dry and Mostly Cloudy	1
+12	Partly Cloudy	2667
+12	Mostly Cloudy	2414
+12	Overcast	1427
+12	Clear	912
+12	Foggy	603
+12	Breezy and Mostly Cloudy	40
+12	Breezy and Overcast	39
+12	Breezy and Partly Cloudy	32
+12	Windy and Partly Cloudy	8
+12	Dry and Partly Cloudy	7
+12	Windy and Mostly Cloudy	6
+12	Breezy	5
+12	Windy and Overcast	5
+12	Dry	4
+12	Humid and Mostly Cloudy	3
+12	Light Rain	3
+12	Breezy and Foggy	3
+12	Drizzle	3
+12	Humid and Overcast	1
+12	Humid and Partly Cloudy	1
+12	Dry and Mostly Cloudy	1
+12	Rain	1
+12	Windy	1
+
